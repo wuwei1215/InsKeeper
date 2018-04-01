@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
@@ -33,7 +34,7 @@ public class NotificationUtil {
         notificationManager.cancelAll();
     }
 
-    public static void destory() {
+    public static void destroy() {
         notificationManager = null;
     }
 
@@ -42,13 +43,7 @@ public class NotificationUtil {
         NotificationChannel mChannel = new NotificationChannel(ID, "通知测试", NotificationManager.IMPORTANCE_HIGH);
 // 配置通知渠道的属性
         mChannel.setDescription("通知不可描述");
-// 设置通知出现时的闪灯（如果 android 设备支持的话）
-        mChannel.enableLights(false);
-        //mChannel.setLightColor(Color.RED);
-// 设置通知出现时的震动（如果 android 设备支持的话）
-        mChannel.enableVibration(false);
-        //mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-
+        mChannel.enableLights(true);
 
         return mChannel;
     }
@@ -58,8 +53,7 @@ public class NotificationUtil {
      *
      * @param context 上下文
      */
-    public static Notification getNotification(Context context, String title, String content) {
-//        PendingIntent contentIntent = PendingIntent.getActivity(context, 1, new Intent(context, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
+    public static Notification getNotification(Context context, String title, String content,int lightColor) {
         Notification notification = new NotificationCompat.Builder(context, ID)
                 /**设置通知左边的大图标**/
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
@@ -79,17 +73,18 @@ public class NotificationUtil {
                 .setAutoCancel(true)
                 /**设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)**/
                 .setOngoing(true)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 /**向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合：**/
                 //.setDefaults(Notification.DEFAULT_SOUND)
 //                .setVibrate(new long[]{0})
-                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
-                .setTimeoutAfter(15000l)
+                //.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND)
+                .setLights(lightColor,5000,1000)
+                .setTimeoutAfter(15000L)
 //                .setFullScreenIntent(contentIntent,true)
 //                .setContentIntent(contentIntent)
 //                .setContentIntent(PendingIntent.getActivity(context, 1, new Intent(context, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT))
                 .build();
-        notification.flags = Notification.FLAG_AUTO_CANCEL;
+        notification.flags = Notification.FLAG_AUTO_CANCEL|Notification.FLAG_SHOW_LIGHTS;
         return notification;
 
     }
@@ -101,9 +96,8 @@ public class NotificationUtil {
         }
         String title = "开始下载";
         String content = url + "资源开始下载，请稍候";
-        Notification notification = getNotification(context, title, content);
+        Notification notification = getNotification(context, title, content, Color.BLUE);
         notificationManager.notify(notify_id, notification);
-//        Toast.makeText(context,"notify_id = " + String.valueOf(notify_id),Toast.LENGTH_SHORT).show();
         Log.e("开始下载", "notify_id = " + String.valueOf(notify_id));
         return notify_id;
     }
@@ -111,19 +105,17 @@ public class NotificationUtil {
     public static void sendFinishNotification(Context context, int id, String fileName) {
         String title = "下载完成";
         String content = fileName + "下载完成，请在资源库查看";
-        Notification notification = getNotification(context, title, content);
+        Notification notification = getNotification(context, title, content,Color.GREEN);
         notificationManager.cancel(id);
         notificationManager.notify(id, notification);
-//        Toast.makeText(context,fileName + "下载完成，请在资源库查看",Toast.LENGTH_SHORT).show();
         Log.e("下载完成", "文件名：" + fileName);
     }
 
     public static void sendErrorNotification(Context context, int id, String content) {
         String title = "下载失败";
-        Notification notification = getNotification(context, title, content);
+        Notification notification = getNotification(context, title, content,Color.RED);
         notificationManager.cancel(id);
         notificationManager.notify(id, notification);
-//        Toast.makeText(context,"下载失败，错误类型：" + content,Toast.LENGTH_SHORT).show();
         Log.e("下载失败", "错误类型：" + content);
     }
 }

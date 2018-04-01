@@ -1,13 +1,18 @@
 package com.practice.wuwei.inskeeper;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -44,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    startService(intent);
                     //getPermission();
-//                    if(getPermission()) {
-//                        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-//                    }
+                    if(getPermission()) {
+                        //bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                        startService(intent);
+                    }
                 } else {
                     stopService(intent);
 //                    unbindService(serviceConnection);
@@ -95,25 +100,25 @@ public class MainActivity extends AppCompatActivity {
 //        outState.putBoolean("serviceState", swService.isChecked());
 //    }
 
-//    private boolean getPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED||
-//                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//                swService.setChecked(false);
-//                //申请WRITE_EXTERNAL_STORAGE权限
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                        WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
-//                return  false;
-//            } else {
-//                Log.e("我已有权限", "已有权限");
-//                //startService(intent);
-//                return  true;
-//            }
-//        } else {
-//            //startService(intent);
-//            return  true;
-//        }
-//    }
+    private boolean getPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                swService.setChecked(false);
+                //申请WRITE_EXTERNAL_STORAGE权限
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
+                return  false;
+            } else {
+                Log.e("我已有权限", "已有权限");
+                //startService(intent);
+                return  true;
+            }
+        } else {
+            //startService(intent);
+            return  true;
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -60,7 +61,7 @@ public class DownloadService extends Service {
         NotificationUtil.init(this);
         clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         registerClipEvents();
-        Notification notification = NotificationUtil.getNotification(this, "Instagram下载服务", "服务成功运行，在Instagram中点击\"复制链接\"即可自动下载");
+        Notification notification = NotificationUtil.getNotification(this, "Instagram下载服务", "服务成功运行，在Instagram中点击\"复制链接\"即可自动下载", Color.CYAN);
         notification.contentIntent = PendingIntent.getActivity(this, 1, new Intent(this, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
         notification.flags = Notification.FLAG_FOREGROUND_SERVICE;
         /**发起通知**/
@@ -71,7 +72,7 @@ public class DownloadService extends Service {
     public boolean onUnbind(Intent intent) {
 //        unregisterClipEvents();
 //        stopForeground(true);
-//        NotificationUtil.destory();
+//        NotificationUtil.destroy();
         return true;
     }
 
@@ -85,7 +86,7 @@ public class DownloadService extends Service {
     public void onDestroy() {
         unregisterClipEvents();
         stopForeground(true);
-        NotificationUtil.destory();
+        NotificationUtil.destroy();
         super.onDestroy();
     }
 
